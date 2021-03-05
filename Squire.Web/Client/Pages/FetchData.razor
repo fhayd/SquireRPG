@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Squire.Web.Client.Http
 @using Squire.Web.Shared
 @attribute [Authorize]
 @inject HttpClient Http
@@ -39,18 +40,14 @@ else
 }
 
 @code {
+    private IWeatherForecastController _controller;
     private WeatherForecast[] forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
+        var provider = new HttpHandlerProvider();
+        _controller = await provider.CreateForecastHttpHandler();
+        forecasts = _controller.Get().ToArray();
     }
 
 }
