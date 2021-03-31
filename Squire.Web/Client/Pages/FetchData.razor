@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Squire.Web.Client.Http
 @using Squire.Web.Shared
+@using Squire.Web.Shared.API
 @attribute [Authorize]
 @inject HttpClient Http
 
@@ -46,7 +47,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var provider = new HttpHandlerProvider();
-        _controller = await provider.CreateForecastHttpHandler();
+        _controller = await provider.CreateForecastHttpHandler(Http);
         forecasts = _controller.Get().ToArray();
     }
 
