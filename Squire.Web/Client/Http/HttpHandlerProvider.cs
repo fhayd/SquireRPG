@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ArxOne.MrAdvice.Advice;
 using Newtonsoft.Json;
@@ -39,6 +41,14 @@ namespace Squire.Web.Client.Http
             public async Task Advise(MethodAsyncAdviceContext context)
             {
                 var weather = await _client.GetAsync("WeatherForecast");
+                var method = (MethodInfo) context.TargetMethod;
+                // if (method.ReturnType.IsAssignableFrom(typeof(Task<>)))
+                // {
+                var genericReturnValue = JsonConvert.DeserializeObject(await weather.Content.ReadAsStringAsync(),
+                    method.ReturnType.GetGenericArguments()[0]);
+                context.ReturnValue = Task.FromResult(genericReturnValue);
+                        ;
+                // }
             }
         }
     }
