@@ -48,7 +48,7 @@ else
     {
         var provider = new HttpHandlerProvider();
         _controller = await provider.CreateForecastHttpHandler(Http);
-        forecasts = (await _controller.Get()).ToArray();
+        forecasts = (await _controller.Get())?.ToArray();
     }
 
 }

@@ -9,20 +9,20 @@ namespace Squire.Web.Shared.API
 {
     public class ApiHelper
     {
-        private static readonly ConcurrentDictionary<MethodInfo, MethodInfoAdvise> ApiAddresses =
-            new ConcurrentDictionary<MethodInfo, MethodInfoAdvise>();
+        private static readonly ConcurrentDictionary<string, MethodInfoAdvise> ApiAddresses =
+            new ConcurrentDictionary<string, MethodInfoAdvise>();
 
         public static MethodInfoAdvise GetCall(MethodInfo targetMethod)
         {
-            if (ApiAddresses.TryGetValue(targetMethod, out var call)) return call;
+            if (ApiAddresses.TryGetValue(targetMethod.DeclaringType + targetMethod.Name, out var call)) return call;
             throw new NotSupportedException("Api not supported");
         }
 
-        public static void SetAddresses(IEnumerable<(MethodInfo, MethodInfoAdvise)> addresses)
+        public static void SetAddresses(IEnumerable<MethodInfoAdvise> methods)
         {
-            foreach (var valueTuple in addresses)
+            foreach (var method in methods)
             {
-                ApiAddresses[valueTuple.Item1] = valueTuple.Item2;
+                ApiAddresses[method.Type + method.Name] = method;
             }
         }
     }

@@ -17,13 +17,12 @@ namespace Squire.Web.Client.Http
         public async Task<IWeatherForecastController> CreateForecastHttpHandler(HttpClient client)
         {
             var aspect = new HttpInvoke(client);
-            var addresses = await client.GetAsync("ApiCalls");
-            if (addresses.IsSuccessStatusCode)
+            var response = await client.GetAsync("ApiCalls");
+            if (response.IsSuccessStatusCode)
             {
-                var content = await addresses.Content.ReadAsStringAsync();
-                Console.WriteLine(content);
-                // ApiHelper.SetAddresses(
-                //     JsonConvert.DeserializeObject<IEnumerable<(MethodInfo, MethodInfoAdvise)>>(content));
+                var methodInfos = await response.Content.ReadAsStringAsync();
+                ApiHelper.SetAddresses(
+                    JsonConvert.DeserializeObject<IEnumerable<MethodInfoAdvise>>(methodInfos));
             }
 
             return aspect.Handle<IWeatherForecastController>();
@@ -44,10 +43,8 @@ namespace Squire.Web.Client.Http
                 var method = (MethodInfo) context.TargetMethod;
                 // if (method.ReturnType.IsAssignableFrom(typeof(Task<>)))
                 // {
-                var genericReturnValue = JsonConvert.DeserializeObject(await weather.Content.ReadAsStringAsync(),
-                    method.ReturnType.GetGenericArguments()[0]);
-                context.ReturnValue = Task.FromResult(genericReturnValue);
-                        ;
+                    context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(await weather.Content.ReadAsStringAsync(),
+                        method.ReturnType.GetGenericArguments()[0]));
                 // }
             }
         }
