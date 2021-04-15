@@ -39,11 +39,12 @@ namespace Squire.Web.Client.Http
 
             public async Task Advise(MethodAsyncAdviceContext context)
             {
-                var weather = await _client.GetAsync("WeatherForecast");
-                var method = (MethodInfo) context.TargetMethod;
+                var method = (MethodInfo)context.TargetMethod;
+                var call = ApiHelper.GetCall(method);
+                var response = await _client.SendAsync(new HttpRequestMessage(call.HttpMethod, call.Address));
                 // if (method.ReturnType.IsAssignableFrom(typeof(Task<>)))
                 // {
-                    context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(await weather.Content.ReadAsStringAsync(),
+                    context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync(),
                         method.ReturnType.GetGenericArguments()[0]));
                 // }
             }

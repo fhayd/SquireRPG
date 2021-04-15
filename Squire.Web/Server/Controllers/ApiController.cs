@@ -19,14 +19,14 @@ namespace Squire.Web.Server.Controllers
         {
             var controller = Assembly.GetExecutingAssembly().GetTypes()
                 .FirstOrDefault(x => x.Name == "WeatherForecastController");
-            var method = controller?.GetMethods().First();
+            var method = controller?.GetMethods().Where(x => x.DeclaringType == controller).First();
             var methods = new List<MethodInfoAdvise>
             {
                 new MethodInfoAdvise
                 {
-                    Type = method?.ReturnType.ToString(),
+                    Type = method?.ReturnType.FullName,
                     Name = method?.Name,
-                    DeclaringType = method?.DeclaringType.ToString(),
+                    DeclaringType = method?.DeclaringType?.FullName,
                     Address = "WeatherForecast",
                     HttpMethod = HttpMethod.Get
                 }

@@ -14,7 +14,7 @@ namespace Squire.Web.Shared.API
 
         public static MethodInfoAdvise GetCall(MethodInfo targetMethod)
         {
-            if (ApiAddresses.TryGetValue(targetMethod.DeclaringType + targetMethod.Name, out var call)) return call;
+            if (ApiAddresses.TryGetValue(targetMethod.ReturnType.FullName + targetMethod.Name, out var call)) return call;
             throw new NotSupportedException("Api not supported");
         }
 
