@@ -42,11 +42,11 @@ namespace Squire.Web.Client.Http
                 var method = (MethodInfo)context.TargetMethod;
                 var call = ApiHelper.GetCall(method);
                 var response = await _client.SendAsync(new HttpRequestMessage(call.HttpMethod, call.Address));
-                // if (method.ReturnType.IsAssignableFrom(typeof(Task<>)))
-                // {
+                if (method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
+                {
                     context.ReturnValue = Task.FromResult(JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync(),
                         method.ReturnType.GetGenericArguments()[0]));
-                // }
+                }
             }
         }
     }
